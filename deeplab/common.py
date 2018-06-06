@@ -76,6 +76,13 @@ flags.DEFINE_boolean('decoder_use_separable_conv', True,
 flags.DEFINE_enum('merge_method', 'max', ['max', 'avg'],
                   'Scheme to merge multi scale features.')
 
+flags.DEFINE_integer('huge_kernel_size', None,
+		     'The kernel size for huge convolutional kernel.')
+
+flags.DEFINE_integer('new_module_depth', 256,
+		     'The depth of the new module after the backbone network, '
+		     'such as image pooling branch, huge kernel branch and conv1x1 branch.')
+
 FLAGS = flags.FLAGS
 
 # Constants
@@ -112,6 +119,8 @@ class ModelOptions(
         'logits_kernel_size',
         'model_variant',
         'depth_multiplier',
+	'huge_kernel_size',
+	'new_module_depth'
     ])):
   """Immutable class to hold model options."""
 
@@ -141,4 +150,5 @@ class ModelOptions(
         FLAGS.aspp_with_batch_norm, FLAGS.aspp_with_separable_conv,
         FLAGS.multi_grid, FLAGS.decoder_output_stride,
         FLAGS.decoder_use_separable_conv, FLAGS.logits_kernel_size,
-        FLAGS.model_variant, FLAGS.depth_multiplier)
+        FLAGS.model_variant, FLAGS.depth_multiplier,
+	FLAGS.huge_kernel_size, FLAGS.new_module_depth)
