@@ -3,9 +3,9 @@
 
 ############################## use huge kernel 31 and new module depth 256 #################################
 #13
-mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
-mv ./deeplab/datasets/pascal_voc_seg_aug ./deeplab/datasets/pascal_voc_seg
-
+#mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
+#mv ./deeplab/datasets/pascal_voc_seg_aug ./deeplab/datasets/pascal_voc_seg
+<<COMMENT
 python deeplab/train.py \
     --logtostderr \
     --training_number_of_steps=30000 \
@@ -18,16 +18,17 @@ python deeplab/train.py \
     --num_clones=4 \
     --dataset="pascal_voc_seg" \
     --tf_initial_checkpoint=./deeplab/init_checkpoint/xception/model.ckpt \
-    --train_logdir=./deeplab/train_log/13_train_dir_true_no_decoder_no_aspp_huge_31_depth_256_aug_0.007 \
+    --train_logdir=./deeplab/train_log/13_train_dir_true_no_decoder_no_aspp_huge_21_depth_256_aug_0.007 \
     --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
     --base_learning_rate=0.007 \
     --fine_tune_batch_norm=True \
-    --huge_kernel_size=31
+    --huge_kernel_size=21
     --new_module_depth=256
 
 # 14
 mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
 mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
+COMMENT
 
 python deeplab/train.py \
     --logtostderr \
@@ -40,12 +41,12 @@ python deeplab/train.py \
     --train_batch_size=16 \
     --num_clones=4 \
     --dataset="pascal_voc_seg" \
-    --tf_initial_checkpoint=./deeplab/train_log/13_train_dir_true_no_decoder_no_aspp_huge_31_depth_256_aug_0.007/model.ckpt-30000 \
-    --train_logdir=./deeplab/train_log/14_train_dir_false_no_decoder_no_aspp_huge_31_depth_256_voc_0.001 \
+    --tf_initial_checkpoint=./deeplab/train_log/13_train_dir_true_no_decoder_no_aspp_huge_21_depth_256_aug_0.007/model.ckpt-30000 \
+    --train_logdir=./deeplab/train_log/14_train_dir_false_no_decoder_no_aspp_huge_21_depth_256_voc_0.001 \
     --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
     --base_learning_rate=0.001 \
     --fine_tune_batch_norm=False \
-    --huge_kernel_size=31 \
+    --huge_kernel_size=21 \
     --new_module_depth=256
 <<COMMENT
 ############################## use huge kernel 31 and new module depth 512 #################################
@@ -99,30 +100,26 @@ python deeplab/eval.py \
     --logtostderr \
     --eval_split="val" \
     --model_variant="xception_65" \
-    --atrous_rates=6 \
-    --atrous_rates=12 \
     --eval_crop_size=513 \
     --eval_crop_size=513 \
     --dataset="pascal_voc_seg" \
-    --checkpoint_dir=./deeplab/train_log/13_train_dir_true_no_decoder_no_aspp_huge_31_depth_256_aug_0.007 \
+    --checkpoint_dir=./deeplab/train_log/13_train_dir_true_no_decoder_no_aspp_huge_21_depth_256_aug_0.007 \
     --eval_logdir=./deeplab/eval_log \
     --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
-    --huge_kernel_size=31 \
+    --huge_kernel_size=21 \
     --new_module_depth=256
 
 python deeplab/eval.py \
     --logtostderr \
     --eval_split="val" \
     --model_variant="xception_65" \
-    --atrous_rates=6 \
-    --atrous_rates=12 \
     --eval_crop_size=513 \
     --eval_crop_size=513 \
     --dataset="pascal_voc_seg" \
-    --checkpoint_dir=./deeplab/train_log/14_train_dir_false_no_decoder_no_aspp_huge_31_depth_256_voc_0.001 \
+    --checkpoint_dir=./deeplab/train_log/14_train_dir_false_no_decoder_no_aspp_huge_21_depth_256_voc_0.001 \
     --eval_logdir=./deeplab/eval_log \
     --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
-    --huge_kernel_size=31 \
+    --huge_kernel_size=21 \
     --new_module_depth=256
 <<COMMENT
 python deeplab/eval.py \
