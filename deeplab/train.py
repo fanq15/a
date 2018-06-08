@@ -61,7 +61,7 @@ flags.DEFINE_string('train_logdir', None,
 flags.DEFINE_integer('log_steps', 10,
                      'Display logging information at every log_steps.')
 
-flags.DEFINE_integer('save_interval_secs', 1000,
+flags.DEFINE_integer('save_interval_secs', 1200,
                      'How often, in seconds, we save the model to disk.')
 
 flags.DEFINE_integer('save_summaries_secs', 600,
@@ -381,7 +381,7 @@ def main(unused_argv):
             last_layers,
             ignore_missing_vars=True),
         summary_op=summary_op,
-        saver=tf.train.Saver(max_to_keep=40),
+        saver=tf.train.Saver(max_to_keep=5),
 	save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs)
 

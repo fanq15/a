@@ -63,6 +63,7 @@ _ASPP_SCOPE = 'aspp'
 _CONCAT_PROJECTION_SCOPE = 'concat_projection'
 _DECODER_SCOPE = 'decoder'
 _HUGE_FEATURE_SCOPE = 'huge_feature'
+_ADD_PROJECTION_SCOPE = 'add_projection'
 
 
 def get_merged_logits_scope():
@@ -371,7 +372,7 @@ def _extract_features(images,
 
   if not model_options.aspp_with_batch_norm:
     return features, end_points
-  else:
+  elif model_options.huge_mode == 0:
     batch_norm_params = {
         'is_training': is_training and fine_tune_batch_norm,
         'decay': 0.9997,
@@ -422,7 +423,7 @@ def _extract_features(images,
 		  weight_decay=weight_decay,
 		  scope = _HUGE_FEATURE_SCOPE)
 	  branch_logits.append(huge_kernel_feature)
-
+	
         if model_options.atrous_rates:
           # Employ 3x3 convolutions with different atrous rates.
           for i, rate in enumerate(model_options.atrous_rates, 1):
@@ -449,7 +450,67 @@ def _extract_features(images,
             is_training=is_training,
             scope=_CONCAT_PROJECTION_SCOPE + '_dropout')
 
-        return concat_logits, end_points
+	return concat_logits, end_points
+
+  elif model_options.huge_mode == 1:
+    batch_norm_params = {
+        'is_training': is_training and fine_tune_batch_norm,
+        'decay': 0.9997,
+        'epsilon': 1e-5,
+        'scale': True,
+    }
+
+    with slim.arg_scope(
+        [slim.conv2d, slim.separable_conv2d],
+        weights_regularizer=slim.l2_regularizer(weight_decay),
+        activation_fn=tf.nn.relu,
+        normalizer_fn=slim.batch_norm,
+        padding='SAME',
+        stride=1,
+        reuse=reuse):
+      with slim.arg_scope([slim.batch_norm], **batch_norm_params):
+
+        depth = model_options.new_module_depth # 256
+	if model_options.add_image_level_feature:
+          pool_height = scale_dimension(model_options.crop_size[0],
+                                        1. / model_options.output_stride)
+          pool_width = scale_dimension(model_options.crop_size[1],
+                                       1. / model_options.output_stride)
+          image_feature = slim.avg_pool2d(
+              features, [pool_height, pool_width], [pool_height, pool_width],
+              padding='VALID')
+          image_feature = slim.conv2d(
+              image_feature, 2048, 1, scope=_IMAGE_POOLING_SCOPE)
+          image_feature = tf.image.resize_bilinear(
+              image_feature, [pool_height, pool_width], align_corners=True)
+          image_feature.set_shape([None, pool_height, pool_width, 2048])
+
+          features = features + image_feature
+	
+	################ add simple huge kernel branch ##############
+	if model_options.huge_kernel_size:
+	  huge_kernel_feature = _split_simple_depthwise_huge_conv2d(
+		  features,
+		  filters=2048,
+		  huge_kernel=model_options.huge_kernel_size,
+		  weight_decay=weight_decay,
+		  scope = _HUGE_FEATURE_SCOPE)
+
+	  features = features + huge_kernel_feature
+	  
+
+        #add_logits = slim.conv2d(
+        #             features, 1024, 1, scope=_ADD_PROJECTION_SCOPE)
+
+        add_logits = slim.conv2d(
+            features, depth, 1, scope=_ADD_PROJECTION_SCOPE)
+        add_logits = slim.dropout(
+            add_logits,
+            keep_prob=0.9,
+            is_training=is_training,
+            scope=_ADD_PROJECTION_SCOPE + '_dropout')
+
+        return add_logits, end_points
 
 
 def _get_logits(images,
@@ -760,3 +821,42 @@ def _split_separable_huge_conv2d(inputs,
           stddev=pointwise_weights_initializer_stddev),
       weights_regularizer=slim.l2_regularizer(weight_decay),
       scope=scope + '_pointwise')
+
+def _split_simple_depthwise_huge_conv2d(inputs,
+                            filters,
+			    huge_kernel,
+                            rate=1,
+                            weight_decay=0.00004,
+                            depthwise_weights_initializer_stddev=0.33,
+                            pointwise_weights_initializer_stddev=0.06,
+                            scope=None):
+  """Splits a separable conv2d into depthwise and pointwise conv2d.
+
+  This operation differs from `tf.layers.separable_conv2d` as this operation
+  applies activation function between depthwise and pointwise conv2d.
+
+  Args:
+    inputs: Input tensor with shape [batch, height, width, channels].
+    filters: Number of filters in the 1x1 pointwise convolution.
+    rate: Atrous convolution rate for the depthwise convolution.
+    weight_decay: The weight decay to use for regularizing the model.
+    depthwise_weights_initializer_stddev: The standard deviation of the
+      truncated normal weight initializer for depthwise convolution.
+    pointwise_weights_initializer_stddev: The standard deviation of the
+      truncated normal weight initializer for pointwise convolution.
+    scope: Optional scope for the operation.
+
+  Returns:
+    Computed features after split separable conv2d.
+  """
+  outputs = slim.separable_conv2d(
+      inputs,
+      None,
+      huge_kernel,
+      depth_multiplier=1,
+      rate=rate,
+      weights_initializer=tf.truncated_normal_initializer(
+          stddev=depthwise_weights_initializer_stddev),
+      weights_regularizer=None,
+      scope=scope + '_depthwise')
+  return outputs

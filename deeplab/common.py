@@ -83,6 +83,8 @@ flags.DEFINE_integer('new_module_depth', 256,
 		     'The depth of the new module after the backbone network, '
 		     'such as image pooling branch, huge kernel branch and conv1x1 branch.')
 
+flags.DEFINE_integer('huge_mode', 1, '...')
+
 FLAGS = flags.FLAGS
 
 # Constants
@@ -120,7 +122,8 @@ class ModelOptions(
         'model_variant',
         'depth_multiplier',
 	'huge_kernel_size',
-	'new_module_depth'
+	'new_module_depth',
+	'huge_mode'
     ])):
   """Immutable class to hold model options."""
 
@@ -151,4 +154,5 @@ class ModelOptions(
         FLAGS.multi_grid, FLAGS.decoder_output_stride,
         FLAGS.decoder_use_separable_conv, FLAGS.logits_kernel_size,
         FLAGS.model_variant, FLAGS.depth_multiplier,
-	FLAGS.huge_kernel_size, FLAGS.new_module_depth)
+	FLAGS.huge_kernel_size, FLAGS.new_module_depth,
+	FLAGS.huge_mode)
