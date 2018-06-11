@@ -414,10 +414,10 @@ def _extract_features(images,
 	################## add huge kernel branch #######################
 	################## conv1_1x1 conv2_huge conv3_1x1  ##############
 	if model_options.huge_kernel_size:
-	  huge_kernel_feature = slim.conv2d(
-	       features, depth, 1, scope = _HUGE_FEATURE_SCOPE)
+	  #huge_kernel_feature = slim.conv2d(
+	  #     features, depth, 1, scope = _HUGE_FEATURE_SCOPE)
 	  huge_kernel_feature = _split_separable_huge_conv2d(
-		  huge_kernel_feature,
+		  features,
 		  filters=depth,
 		  huge_kernel=model_options.huge_kernel_size,
 		  weight_decay=weight_decay,

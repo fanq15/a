@@ -1,5 +1,213 @@
 #!/bin/bash
 
+############################## use simple huge kernel 21 and huge mode 0 #################################
+#29 with image global pooling, with dropout, depth=256
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
+mv ./deeplab/datasets/pascal_voc_seg_aug ./deeplab/datasets/pascal_voc_seg
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=30000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/init_checkpoint/xception/model.ckpt \
+    --train_logdir=./deeplab/train_log/29_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.007 \
+    --fine_tune_batch_norm=True \
+    --huge_kernel_size=21 \
+    --huge_mode=0 \
+    --add_image_level_feature=True \
+    --new_module_depth=256
+
+# 30
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
+mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
+
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=15000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/train_log/29_train_dir/model.ckpt-30000 \
+    --train_logdir=./deeplab/train_log/30_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.001 \
+    --fine_tune_batch_norm=False \
+    --huge_kernel_size=21 \
+    --huge_mode=0 \
+    --add_image_level_feature=True \
+    --new_module_depth=256
+
+############################## use simple huge kernel 21 and huge mode 0 #################################
+#31 no image global pooling, with dropout, depth=256
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
+mv ./deeplab/datasets/pascal_voc_seg_aug ./deeplab/datasets/pascal_voc_seg
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=30000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/init_checkpoint/xception/model.ckpt \
+    --train_logdir=./deeplab/train_log/31_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.007 \
+    --fine_tune_batch_norm=True \
+    --huge_kernel_size=21 \
+    --huge_mode=0 \
+    --add_image_level_feature=False \
+    --new_module_depth=256
+
+# 32
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
+mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
+
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=15000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/train_log/31_train_dir/model.ckpt-30000 \
+    --train_logdir=./deeplab/train_log/32_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.001 \
+    --fine_tune_batch_norm=False \
+    --huge_kernel_size=21 \
+    --huge_mode=0 \
+    --add_image_level_feature=False \
+    --new_module_depth=256
+<<COMMENT
+############################## use simple huge kernel 31 and huge mode 1 #################################
+#25 no image global pooling, with dropout, depth=1024
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
+mv ./deeplab/datasets/pascal_voc_seg_aug ./deeplab/datasets/pascal_voc_seg
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=30000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/init_checkpoint/xception/model.ckpt \
+    --train_logdir=./deeplab/train_log/25_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.007 \
+    --fine_tune_batch_norm=True \
+    --huge_kernel_size=31 \
+    --huge_mode=1 \
+    --add_image_level_feature=False \
+    --new_module_depth=1024
+
+# 26 
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
+mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
+
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=15000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/train_log/25_train_dir/model.ckpt-30000 \
+    --train_logdir=./deeplab/train_log/26_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.001 \
+    --fine_tune_batch_norm=False \
+    --huge_kernel_size=31 \
+    --huge_mode=1 \
+    --add_image_level_feature=False \
+    --new_module_depth=1024
+
+############################## use simple huge kernel 21 and huge mode 1 #################################
+#27 no image global pooling, with dropout, depth=2048
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
+mv ./deeplab/datasets/pascal_voc_seg_aug ./deeplab/datasets/pascal_voc_seg
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=30000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/init_checkpoint/xception/model.ckpt \
+    --train_logdir=./deeplab/train_log/27_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.007 \
+    --fine_tune_batch_norm=True \
+    --huge_kernel_size=21 \
+    --huge_mode=1 \
+    --add_image_level_feature=False \
+    --new_module_depth=2048
+
+# 28 
+mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
+mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
+
+
+python deeplab/train.py \
+    --logtostderr \
+    --training_number_of_steps=15000 \
+    --train_split="train" \
+    --model_variant="xception_65" \
+    --output_stride=16 \
+    --train_crop_size=513 \
+    --train_crop_size=513 \
+    --train_batch_size=16 \
+    --num_clones=4 \
+    --dataset="pascal_voc_seg" \
+    --tf_initial_checkpoint=./deeplab/train_log/27_train_dir/model.ckpt-30000 \
+    --train_logdir=./deeplab/train_log/28_train_dir \
+    --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
+    --base_learning_rate=0.001 \
+    --fine_tune_batch_norm=False \
+    --huge_kernel_size=21 \
+    --huge_mode=1 \
+    --add_image_level_feature=False \
+    --new_module_depth=2048
+
 ############################## use simple huge kernel 21 and huge mode 1 #################################
 #21 no image global pooling, with dropout, depth=1024
 mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
@@ -26,7 +234,7 @@ python deeplab/train.py \
     --add_image_level_feature=False \
     --new_module_depth=1024
 
-# 22 
+# 22
 mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
 mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
 
@@ -105,7 +313,7 @@ python deeplab/train.py \
 
 
 
-<<COMMENT
+
 ############################## use simple huge kernel 21 and huge mode 1 #################################
 #17 no image global pooling
 mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
@@ -232,7 +440,6 @@ python deeplab/train.py \
 # 14
 mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_aug
 mv ./deeplab/datasets/pascal_voc_seg_real ./deeplab/datasets/pascal_voc_seg
-COMMENT
 
 python deeplab/train.py \
     --logtostderr \
@@ -252,7 +459,7 @@ python deeplab/train.py \
     --fine_tune_batch_norm=False \
     --huge_kernel_size=21 \
     --new_module_depth=256
-<<COMMENT
+
 ############################## use huge kernel 31 and new module depth 512 #################################
 #15
 mv ./deeplab/datasets/pascal_voc_seg ./deeplab/datasets/pascal_voc_seg_real
@@ -299,7 +506,7 @@ python deeplab/train.py \
     --fine_tune_batch_norm=False \
     --huge_kernel_size=31 \
     --new_module_depth=512
-COMMENT
+
 python deeplab/eval.py \
     --logtostderr \
     --eval_split="val" \
@@ -325,7 +532,7 @@ python deeplab/eval.py \
     --dataset_dir=./deeplab/datasets/pascal_voc_seg/tfrecord \
     --huge_kernel_size=21 \
     --new_module_depth=256
-<<COMMENT
+
 python deeplab/eval.py \
     --logtostderr \
     --eval_split="val" \

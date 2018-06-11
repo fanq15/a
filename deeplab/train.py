@@ -381,7 +381,7 @@ def main(unused_argv):
             last_layers,
             ignore_missing_vars=True),
         summary_op=summary_op,
-        saver=tf.train.Saver(max_to_keep=5),
+        saver=tf.train.Saver(max_to_keep=10),
 	save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs)
 
